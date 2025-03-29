@@ -1,33 +1,40 @@
 import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './Totem.css';
 
 export default function Totem() {
-  const [turnos, setTurnos] = useState({ A: 0, B: 0, C: 0 }); // Almacena el último número de cada especialidad
+  const [turnos, setTurnos] = useState({ A: 0, B: 0, C: 0 });
   const [turno, setTurno] = useState(null);
-  const especialidades = ['A', 'B', 'C'];
+  const especialidades = [
+    { id: 'A', nombre: 'CONSULTA MEDICA' },
+    { id: 'B', nombre: 'ESTETICA' },
+    { id: 'C', nombre: 'SACAR TURNO' }
+  ];
 
   const generarTurno = async (especialidad) => {
-    const nuevoNumero = turnos[especialidad] + 1; // Incrementa el último número asignado
+    const nuevoNumero = turnos[especialidad] + 1;
     const nuevoTurno = `${especialidad}${nuevoNumero}`;
 
-    setTurnos((prev) => ({ ...prev, [especialidad]: nuevoNumero })); // Guarda el último número en el estado
+    setTurnos((prev) => ({ ...prev, [especialidad]: nuevoNumero }));
     setTurno(nuevoTurno);
 
     await fetch('http://localhost:5000/turnos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ turno: nuevoTurno, especialidad }),
+      body: JSON.stringify({ turno: nuevoTurno, especialidad })
     });
   };
 
   return (
-    <div className="container text-center">
-      <h2>Tótem</h2>
+    <div className="totem-container d-flex flex-column align-items-center text-center">
+      <div className="logo">TOTTEM </div>
+      <p className="instrucciones">Por favor, elija una opción</p>
       {especialidades.map((esp) => (
-        <button key={esp} className="btn btn-primary m-2" onClick={() => generarTurno(esp)}>
-          {esp}
+        <button key={esp.id} className="btn btn-totem" onClick={() => generarTurno(esp.id)}>
+          {esp.nombre}
         </button>
       ))}
-      {turno && <h3>Tu turno: {turno}</h3>}
+      {turno && <h3 className="turno">Tu turno: {turno}</h3>}
     </div>
   );
 }

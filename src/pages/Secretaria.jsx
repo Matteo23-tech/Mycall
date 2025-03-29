@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { FaPhoneAlt } from 'react-icons/fa';
+import './Secretaria.css';
 export default function Secretaria() {
   const [turnos, setTurnos] = useState([]);
-  const [turnoSeleccionado, setTurnoSeleccionado] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -38,85 +37,49 @@ export default function Secretaria() {
     }
   };
 
-  const rellamarTurno = (turno) => {
-    llamarTurno(turno);
-    hablarTurno(turno.turno);
-    setShowModal(false);
-  };
-
-  const hablarTurno = (turno) => {
-    if ('speechSynthesis' in window) {
-      const mensaje = new SpeechSynthesisUtterance(`${turno}, Diríjase al box 1.`);
-      mensaje.lang = 'es-ES';
-      mensaje.rate = 1;
-      mensaje.pitch = 1;
-      speechSynthesis.speak(mensaje);
-    } else {
-      console.warn('Tu navegador no soporta síntesis de voz.');
-    }
-  };
-
-  const marcarTurnoListo = async (turno) => {
-    try {
-      await fetch(`http://localhost:5000/turnos/${turno.id}`, {
-        method: 'DELETE',
-      });
-
-      // Eliminar el turno de la lista localmente
-      setTurnos((prevTurnos) => prevTurnos.filter((t) => t.id !== turno.id));
-
-      setShowModal(false);
-    } catch (error) {
-      console.error('Error al eliminar turno:', error);
-      setError('Error al marcar el turno como listo');
-    }
-  };
-
   return (
-    <div className="container">
-      <h2>Secretaría</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      <ul className="list-group">
-        {turnos.map((turno) => (
-          <li key={turno.id} className="list-group-item d-flex justify-content-between">
-            {turno.turno} - {turno.especialidad}
-            <button className="btn btn-primary" onClick={() => { setTurnoSeleccionado(turno); setShowModal(true); }}>
-              Llamar
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {/* Ventana emergente con las opciones */}
-      {showModal && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Opciones para el turno {turnoSeleccionado.turno}</h5>
-                <button type="button" className="close" onClick={() => setShowModal(false)}>
-                  <span>&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <p>Seleccione una opción:</p>
-                <button className="btn btn-secondary w-100 mb-2" onClick={() => llamarTurno(turnoSeleccionado)}>
-                  Llamar turno
-                </button>
-                <button className="btn btn-warning w-100 mb-2" onClick={() => rellamarTurno(turnoSeleccionado)}>
-                  Rellamar turno
-                </button>
-                <button className="btn btn-success w-100 mb-2" onClick={() => marcarTurnoListo(turnoSeleccionado)}>
-                  Listo
-                </button>
-                <button className="btn btn-info w-100">
-                  Atrasar turno
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4>UBICACION </h4>
+        <div>
+          <select className="form-select d-inline-block w-auto me-2">
+            <option>BOX 02 </option>
+          </select>
+          <select className="form-select d-inline-block w-auto">
+            <option>(A) Otras Especialidades</option>
+            <option>(B) Consulta medica</option>
+            <option>(C) Otros</option>
+          </select>
         </div>
-      )}
+        <div className="d-flex align-items-center">
+          <span className="me-2">Usuario del secre</span>
+        </div>
+      </div>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      <table className="table table-bordered">
+        <thead className="table-light">
+          <tr>
+            <th>Turno</th>
+            <th>Tiempo de espera</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {turnos.map((turno) => (
+            <tr key={turno.id}>
+              <td><strong>{turno.turno}</strong> ({turno.especialidad})</td>
+              <td>00:00 min.</td>
+              <td>
+                <button className="btn btn-success d-flex align-items-center" onClick={() => llamarTurno(turno)}>
+                  Llamar <FaPhoneAlt className="ms-2" />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

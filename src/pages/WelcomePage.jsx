@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 
+
+
 export default function WelcomePage() {
   const navigate = useNavigate();  // hook para redirigir a las otras páginas
 

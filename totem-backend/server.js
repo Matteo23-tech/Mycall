@@ -8,7 +8,7 @@ const PORT = 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+app.use(cors({ origin: '*' }));
 // Conectar a la base de datos SQLite
 const db = new sqlite3.Database('./turnos.db', (err) => {
   if (err) console.error('❌ Error al conectar con la BD:', err.message);
